@@ -1,17 +1,49 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 package pb;
 
 option go_package = "proto/gen;pb";
 
-service Pong {
+service Responser {
   rpc Ping(PingRequest) returns (PongResponse);
+  rpc GetList(GetListRequest) returns (stream GetListResponse);
+  rpc SendList(stream SendListRequest) returns (SendListResponse);
+  rpc HandleJob(stream HandleJobRequest) returns (stream HandleJobResponse);
 }
 
+// Unary
 message PingRequest {
   string message = 1;
 }
-
 message PongResponse {
   string message = 1;
+}
+
+// Server streaming
+message GetListRequest {
+  int64 count = 1;
+}
+message GetListResponse {
+  int64 num = 1;
+}
+
+// Client streaming
+message SendListRequest {
+  string message = 1;
+}
+message SendListResponse {
+  repeated string message = 1;
+}
+
+// Bidirectional streaming
+message HandleJobRequest {
+  string username = 1;
+  string password = 2;
+}
+message HandleJobResponse {
+  string status = 1;
+  string username = 2;
+  google.protobuf.Timestamp created_at = 3;
 }
