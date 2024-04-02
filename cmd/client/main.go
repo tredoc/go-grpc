@@ -10,12 +10,31 @@ import (
 	"time"
 )
 
-func main() {
+var (
+	retry   = 5 * time.Second
+	timeout = 5 * time.Second
+)
+
+func connect() (*grpc.ClientConn, error) {
 	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithInsecure(), grpc.WithBlock(), grpc.WithTimeout(timeout))
 	conn, err := grpc.Dial("localhost:8080", opts...)
-	if err != nil {
-		panic(err)
+	return conn, err
+}
+
+func main() {
+	var conn *grpc.ClientConn
+	var err error
+
+	for conn == nil {
+		conn, err = connect()
+		if err != nil {
+			fmt.Println("Failed to connect:", err, "||", "Connection timeout:", timeout, "||", "Retrying in:", retry)
+			time.Sleep(retry)
+			continue
+		}
+
+		fmt.Println("Successfully connected")
 	}
 
 	client := pb.NewResponserClient(conn)

@@ -25,8 +25,9 @@ func (p *Responser) Ping(_ context.Context, in *pb.PingRequest) (*pb.PongRespons
 // GetList Server streaming
 func (p *Responser) GetList(in *pb.GetListRequest, stream pb.Responser_GetListServer) error {
 	for i := range int(in.Count) {
-		fmt.Println("Sending number:", i)
-		if err := stream.Send(&pb.GetListResponse{Num: int64(i) + 1}); err != nil {
+		num := int64(i + 1)
+		fmt.Println("Sending number:", num)
+		if err := stream.Send(&pb.GetListResponse{Num: num}); err != nil {
 			return err
 		}
 		time.Sleep(200 * time.Millisecond)
