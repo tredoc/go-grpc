@@ -9,3 +9,9 @@ This is a dummy gRPC server and client implementation in Golang.
 * `unzip protoc-3.26.0-linux-x86_64.zip -d protoc3`  
 * `sudo mv protoc3/bin/* /usr/local/bin/`  
 * `sudo mv protoc3/include/* /usr/local/include/`  
+
+## Flow
+[X] Implement unary request/response  
+[X] Implement server streaming  
+[X] Implement client streaming  
+[ ] Implement bi-directional streaming  

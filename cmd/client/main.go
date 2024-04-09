@@ -6,6 +6,7 @@ import (
 	"fmt"
 	pb "github.com/tredoc/go-grpc/proto/gen"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
 	"time"
 )
@@ -41,6 +42,7 @@ func main() {
 	ctx := context.Background()
 
 	// Unary
+	fmt.Println("\nRun Unary")
 	{
 		fmt.Println("Sending ping")
 		resp, err := client.Ping(ctx, &pb.PingRequest{Message: "Ping"})
@@ -52,6 +54,7 @@ func main() {
 	time.Sleep(5 * time.Second)
 
 	// Server streaming
+	fmt.Println("\nRun server streaming")
 	{
 		count := int64(25)
 		fmt.Println("Requesting list of", count, "numbers")
@@ -77,5 +80,31 @@ func main() {
 	time.Sleep(5 * time.Second)
 
 	// Client streaming
+	fmt.Println("\nRun client streaming")
+	{
+		stream, err := client.SendList(ctx)
+		if err != nil {
+			panic(err)
+		}
+
+		for i := 0; i < 100; i++ {
+			t := timestamppb.Now()
+			err = stream.Send(&pb.SendListRequest{Timestamp: t})
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println("Client sent timestamp:", t)
+			time.Sleep(200 * time.Millisecond)
+		}
+
+		resp, err := stream.CloseAndRecv()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Received response by Client:", resp)
+	}
+	time.Sleep(5 * time.Second)
+
 	// Bidirectional streaming
+	fmt.Println("\nBidirectional streaming")
 }

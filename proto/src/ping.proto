@@ -31,10 +31,10 @@ message GetListResponse {
 
 // Client streaming
 message SendListRequest {
-  string message = 1;
+  google.protobuf.Timestamp timestamp = 1;
 }
 message SendListResponse {
-  repeated string message = 1;
+  repeated google.protobuf.Timestamp timestamp = 1;
 }
 
 // Bidirectional streaming
