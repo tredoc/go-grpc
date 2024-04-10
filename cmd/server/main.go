@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/tredoc/go-grpc/proto/gen"
+	pb "github.com/tredoc/go-grpc/proto/gen"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
