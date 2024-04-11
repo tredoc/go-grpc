@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"io"
+	"log"
 	"time"
 )
 
@@ -106,5 +107,38 @@ func main() {
 	time.Sleep(5 * time.Second)
 
 	// Bidirectional streaming
-	fmt.Println("\nBidirectional streaming")
+	fmt.Println("\nRun bidirectional streaming")
+	stream, err := client.HandleJob(context.Background())
+	done := make(chan struct{})
+	go func() {
+		for {
+			in, err := stream.Recv()
+			if err == io.EOF {
+				done <- struct{}{}
+				return
+			}
+			if err != nil {
+				log.Fatalf("Failed to receive a note : %v", err)
+			}
+			log.Print("User created ", "username: ", in.Username, "status: ", in.Status, "created at: ", in.CreatedAt.AsTime())
+		}
+	}()
+
+	for {
+		u := pb.HandleJobRequest{
+			Username: "username",
+			Password: "any",
+		}
+
+		select {
+		case <-done:
+			return
+		default:
+			fmt.Println("Sending user to create:", u.Username)
+			if err := stream.Send(&u); err != nil {
+				log.Fatalf("Failed to send a user: %v", err)
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}
 }

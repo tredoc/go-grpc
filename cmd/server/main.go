@@ -66,7 +66,29 @@ func (p *Responser) SendList(stream pb.Responser_SendListServer) error {
 
 // HandleJob Bidirectional streaming
 func (p *Responser) HandleJob(stream pb.Responser_HandleJobServer) error {
-	return nil
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Server received user to create:", in.Username)
+
+		u := pb.HandleJobResponse{
+			Status:    "Success",
+			Username:  in.Username,
+			CreatedAt: timestamppb.Now(),
+		}
+
+		go func() {
+			if err := stream.Send(&u); err != nil {
+				log.Fatal(err)
+			}
+		}()
+	}
 }
 
 func main() {

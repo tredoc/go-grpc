@@ -14,4 +14,4 @@ This is a dummy gRPC server and client implementation in Golang.
 [X] Implement unary request/response  
 [X] Implement server streaming  
 [X] Implement client streaming  
-[ ] Implement bi-directional streaming  
+[X] Implement bi-directional streaming  
